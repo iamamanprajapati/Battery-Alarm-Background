@@ -9,8 +9,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import DeviceInfo from 'react-native-device-info';
 
 
-
-
 const sleep = time => new Promise(resolve => setTimeout(() => resolve(), time));
 
 const options = {
@@ -64,30 +62,50 @@ export class Components extends Component {
             for (let i = 0; BackgroundJob.isRunning(); i++) {
 
                 DeviceInfo.getBatteryLevel().then(batteryLevel => {
-                    // console.log(batteryLevel)
-                    var percentage = (batteryLevel) * 100;
+                    let percentage = (batteryLevel) * 100;
                     percentage = percentage.toFixed(0);
+                    // console.log(percentage)
+                    BackgroundJob.updateNotification({ taskDesc: 'Battery  ' + percentage + '%' });
                     this.setState({
                         batteryPercentage: percentage
                     })
-                    console.log(batteryLevel)
-                    if (batteryLevel > .19 && val === 0)
+                    // console.log(Number(percentage))
+
+                    if (percentage === "100" && (val === 0 || val === 1)) {
+                        AsyncStorage.getItem('settone').then(tone => {
+                            console.log(tone)
+                            playSampleSound(JSON.parse(tone))
+                            val = val + 3
+                        })
+                    }
+
+                    if (Number(percentage) === this.state.slider && val === 0) {
                         AsyncStorage.getItem('settone').then(tone => {
                             console.log(tone)
                             playSampleSound(JSON.parse(tone))
                             val = val + 1
                         })
+                    }
                 });
-                await BackgroundJob.updateNotification({ taskDesc: 'Battery  ' + this.state.batteryPercentage + '%' });
                 await sleep(delay);
             }
         });
     };
 
+    componentDidMount() {
+        AsyncStorage.getItem('alarmValue').then(value => {
+            this.setState({
+                isAlarm: JSON.parse(value)
+            })
+        })
+    }
+
     setAlarm = (value) => {
+        AsyncStorage.setItem('alarmValue', JSON.stringify(value))
         this.setState({
             isAlarm: value
         })
+        this.toggleBackground()
     }
 
     setVibration = (val) => {
@@ -127,7 +145,6 @@ export class Components extends Component {
                             <Text style={{ fontWeight: 'bold', color: '#004d00' }}>On alarm when full battery?</Text>
                         </View>
                         <View style={{ flex: 1.5, marginRight: 10 }}>
-                            <Button title="click" onPress={() => this.toggleBackground()} />
                             <Switch
                                 value={this.state.isAlarm}
                                 onValueChange={(val) => this.setAlarm(val)}
@@ -139,7 +156,6 @@ export class Components extends Component {
                                 circleActiveColor={'#30a566'}
                                 circleInActiveColor={'#000000'}
                             />
-                            <Button title="click" onPress={() => stopSampleSound()} />
                         </View>
                     </View>
 
