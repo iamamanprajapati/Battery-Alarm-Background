@@ -1,4 +1,4 @@
-package com.reactnativedeviceinfo;
+package in.kwikittlabs.chargingreminder;
 
 import android.app.Application;
 import android.content.Context;

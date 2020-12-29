@@ -1,4 +1,4 @@
-package com.reactnativedeviceinfo;
+package in.kwikittlabs.chargingreminder;
 
 import com.facebook.react.ReactActivity;
 
