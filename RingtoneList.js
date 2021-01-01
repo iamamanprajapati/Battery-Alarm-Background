@@ -1,14 +1,22 @@
 import React, { Component } from 'react'
-import { Text, View, ScrollView, TouchableOpacity, Image, BackHandler, Alert } from 'react-native'
+import { Text, View, ScrollView, TouchableOpacity, Image, BackHandler, Alert, StyleSheet, StatusBar, SafeAreaView, FlatList } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import NotificationSounds, { playSampleSound, stopSampleSound } from 'react-native-notification-sounds';
 import AsyncStorage from '@react-native-community/async-storage';
+
+const Item = ({ item, onPress, style }) => (
+        <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
+            <Text style={styles.title}>{item.title}</Text>
+        </TouchableOpacity>
+);
+
 export class RingtoneList extends Component {
 
     constructor() {
         super()
         this.state = {
-            toneList: []
+            toneList: [],
+            selectedId: null
         }
     }
 
@@ -22,7 +30,7 @@ export class RingtoneList extends Component {
 
     componentDidMount() {
         BackHandler.addEventListener("hardwareBackPress", this.backAction);
-        NotificationSounds.getNotifications('media').then(soundList => {
+        NotificationSounds.getNotifications('ringtone').then(soundList => {
             this.setState({
                 toneList: soundList
             })
@@ -33,11 +41,27 @@ export class RingtoneList extends Component {
         BackHandler.removeEventListener("hardwareBackPress", this.backAction);
     }
 
-    selectRingtone = (list) => {
-        console.log(list)
-        AsyncStorage.setItem('settone', JSON.stringify(list));
-        playSampleSound(list);
+    selectRingtone = (item) => {
+        this.setState({
+            selectedId: item.soundID
+        })
+        console.log(item.url)
+        AsyncStorage.setItem('settone', JSON.stringify(item));
+        playSampleSound(item);
     }
+
+    renderItem = ({ item }) => {
+        const backgroundColor = item.soundID === this.state.selectedId ? "#999999" : "#f2f2f2";
+        const borderRadius = 10
+        return (
+            <Item
+                item={item}
+                onPress={() => this.selectRingtone(item)}
+                style={{ backgroundColor,borderRadius }}
+            />
+        );
+    };
+
 
     render() {
         return (
@@ -54,31 +78,39 @@ export class RingtoneList extends Component {
                                     }}
                                 />
                             </TouchableOpacity>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginLeft: '15%' }}>BATTERY FULL ALARM</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginLeft: '15%' }}>CHARGING REMINDER</Text>
                         </View>
                     </View>
                 </View>
-                <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-                    {
-                        this.state.toneList.map(list => (
-                            <TouchableOpacity style={{ backgroundColor: '#e6e6e6', height: 60, width: "90%", borderRadius: 10, marginTop: 8, marginBottom: 5, flexDirection: 'row', alignItems: 'center' }}
-                                onPress={() => this.selectRingtone(list)}
-                            >
-                                <View >
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontWeight: 'bold', color: '#004d00' }}>{list.title}</Text>
-                                    </View>
-                                    <View style={{ marginLeft: 10 }}>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        ))
-                    }
-
-                </ScrollView>
+                <SafeAreaView style={styles.container}>
+                    <FlatList
+                        data={this.state.toneList}
+                        renderItem={this.renderItem}
+                        keyExtractor={(item) => item.soundID}
+                        extraData={this.state.selectedId}
+                    />
+                </SafeAreaView>
             </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        marginTop: StatusBar.currentHeight || 0,
+    },
+    item: {
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 10,
+    },
+    title: {
+        fontSize: 20,
+        fontWeight:'bold',
+        color:'#194d19'
+    },
+});
+
 
 export default RingtoneList

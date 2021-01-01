@@ -3,6 +3,8 @@ import { Text, View, ScrollView, TouchableOpacity, Image, Button } from 'react-n
 import { Components } from "./Components";
 import AsyncStorage from "@react-native-community/async-storage";
 import BatteryBar from './BatteryBar';
+import { BannerAd, BannerAdSize, TestIds } from '@react-native-firebase/admob';
+const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-4785007038647034/5711849307';
 
 export class HomeScreen extends Component {
 
@@ -31,19 +33,28 @@ export class HomeScreen extends Component {
                         }}
                     />
                 </TouchableOpacity>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginLeft: '15%' }}>BATTERY FULL ALARM</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', marginLeft: '15%' }}>CHARGING REMINDER</Text>
             </View>
         );
     }
 
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: 'black' }}>
+            <View style={{ backgroundColor: 'black',height:'100%' }}>
                 <View style={{ backgroundColor: 'black', height: 60, justifyContent: 'center' }}>
                     {this.NavigationDrawerStructure()}
                 </View>
-                <BatteryBar />
-                <Components navigate={this.props.navigation.navigate} />
+                    <BatteryBar />
+                    <Components navigate={this.props.navigation.navigate} />
+                <View style={{position:'absolute',bottom:0}}>
+                    <BannerAd
+                        unitId={adUnitId}
+                        size={BannerAdSize.SMART_BANNER}
+                        requestOptions={{
+                            requestNonPersonalizedAdsOnly: true,
+                        }}
+                    />
+                </View>
             </View>
         )
     }

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "470298370866",
+    "project_id": "charging-reminder",
+    "storage_bucket": "charging-reminder.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:470298370866:android:85e6c177cde8bfadaf2d2b",
+        "android_client_info": {
+          "package_name": "in.kwikittlabs.chargingreminder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "470298370866-aqht7e35e2i38hpjk6ahfpicg2hmldu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAN5XPhC5qWrefSd7UyejjHL7qycL0vgNw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "470298370866-aqht7e35e2i38hpjk6ahfpicg2hmldu7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
